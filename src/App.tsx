@@ -17,6 +17,7 @@ import {
   Table,
   LayoutGrid
 } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import { DashboardTemplate, CartItem } from './types';
 import { DASHBOARD_TEMPLATES } from './data/templatesData';
 import { Header } from './components/Header';
@@ -335,6 +336,7 @@ export default function App() {
         />
       )}
 
+      <Analytics />
     </div>
   );
 }
