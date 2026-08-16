@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://power-bi-dashboard-templates.vercel.app/sitemap.xml
