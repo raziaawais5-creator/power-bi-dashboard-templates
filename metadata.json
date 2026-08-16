@@ -1,0 +1,6 @@
+{
+  "name": "Power BI Dashboard Templates Store",
+  "description": "Professional Power BI dashboard templates marketplace featuring live interactive previews, customizable DAX models, and instant template downloads for Sales, HR, Finance, and E-commerce.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
