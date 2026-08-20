@@ -1,24 +1,22 @@
 import React, { useState, useMemo } from 'react';
-import { 
-  BarChart3, 
-  Sparkles, 
-  Layers, 
-  ShieldCheck, 
-  Zap, 
-  Download, 
-  Star, 
-  CheckCircle2, 
-  HelpCircle, 
+import {
+  BarChart3,
+  Sparkles,
+  Zap,
   ArrowRight,
   Eye,
-  SlidersHorizontal,
-  ExternalLink,
-  Code2,
-  Table,
-  LayoutGrid
+  LayoutGrid,
 } from 'lucide-react';
+
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from 'react-router-dom';
+
 import { DashboardTemplate, CartItem } from './types';
 import { DASHBOARD_TEMPLATES } from './data/templatesData';
+
 import { Header } from './components/Header';
 import { TemplateCard } from './components/TemplateCard';
 import { BundleHero } from './components/BundleHero';
@@ -30,107 +28,299 @@ import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { FaqSection } from './components/FaqSection';
 
-export default function App() {
+import { BlogPage } from './components/BlogPage';
+import { BlogArticle } from './components/BlogArticle';
+
+
+/* =========================================================
+   HOME / MARKETPLACE PAGE
+========================================================= */
+
+function MarketplacePage() {
+
   // Navigation & View state
-  const [activeTab, setActiveTab] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isLiveViewerOpen, setIsLiveViewerOpen] = useState<boolean>(false);
-  const [liveViewerTemplateId, setLiveViewerTemplateId] = useState<string>('sales-dashboard');
+  const [activeTab, setActiveTab] =
+    useState<string>('all');
+
+  const [searchQuery, setSearchQuery] =
+    useState<string>('');
+
+  const [isLiveViewerOpen, setIsLiveViewerOpen] =
+    useState<boolean>(false);
+
+  const [liveViewerTemplateId, setLiveViewerTemplateId] =
+    useState<string>('sales-dashboard');
+
 
   // Modals state
-  const [activeDaxModalTemplate, setActiveDaxModalTemplate] = useState<DashboardTemplate | null>(null);
-  const [activeSchemaModalTemplate, setActiveSchemaModalTemplate] = useState<DashboardTemplate | null>(null);
-  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
+  const [activeDaxModalTemplate, setActiveDaxModalTemplate] =
+    useState<DashboardTemplate | null>(null);
+
+  const [activeSchemaModalTemplate, setActiveSchemaModalTemplate] =
+    useState<DashboardTemplate | null>(null);
+
+  const [isCartOpen, setIsCartOpen] =
+    useState<boolean>(false);
+
+  const [isCheckoutOpen, setIsCheckoutOpen] =
+    useState<boolean>(false);
+
 
   // Cart state
   const [cart, setCart] = useState<CartItem[]>([
-    // initial sample item for demonstration
-    { template: DASHBOARD_TEMPLATES[0], quantity: 1 }
+    {
+      template: DASHBOARD_TEMPLATES[0],
+      quantity: 1
+    }
   ]);
 
-  // Handle Cart Operations
-  const handleAddToCart = (template: DashboardTemplate) => {
+
+  /* =========================================================
+     CART OPERATIONS
+  ========================================================== */
+
+  const handleAddToCart = (
+    template: DashboardTemplate
+  ) => {
+
     setCart(prev => {
-      const existing = prev.find(item => item.template.id === template.id);
+
+      const existing = prev.find(
+        item =>
+          item.template.id === template.id
+      );
+
       if (existing) {
-        return prev.map(item => 
-          item.template.id === template.id 
-            ? { ...item, quantity: item.quantity + 1 } 
+
+        return prev.map(item =>
+          item.template.id === template.id
+            ? {
+                ...item,
+                quantity:
+                  item.quantity + 1
+              }
             : item
         );
+
       }
-      return [...prev, { template, quantity: 1 }];
+
+      return [
+        ...prev,
+        {
+          template,
+          quantity: 1
+        }
+      ];
+
     });
+
     setIsCartOpen(true);
   };
 
-  const handleBuyNow = (template: DashboardTemplate) => {
-    setCart([{ template, quantity: 1 }]);
+
+  const handleBuyNow = (
+    template: DashboardTemplate
+  ) => {
+
+    setCart([
+      {
+        template,
+        quantity: 1
+      }
+    ]);
+
     setIsCheckoutOpen(true);
   };
 
-  const handleRemoveFromCart = (templateId: string) => {
-    setCart(prev => prev.filter(item => item.template.id !== templateId));
+
+  const handleRemoveFromCart = (
+    templateId: string
+  ) => {
+
+    setCart(prev =>
+      prev.filter(
+        item =>
+          item.template.id !== templateId
+      )
+    );
+
   };
+
 
   const handleClearCart = () => {
     setCart([]);
   };
 
-  const handleAddBundleToCart = (bundleTemplate: DashboardTemplate) => {
-    // Replace all with bundle to give best price
-    setCart([{ template: bundleTemplate, quantity: 1 }]);
+
+  const handleAddBundleToCart = (
+    bundleTemplate: DashboardTemplate
+  ) => {
+
+    setCart([
+      {
+        template: bundleTemplate,
+        quantity: 1
+      }
+    ]);
+
   };
 
-  // Handle opening live preview
-  const handleOpenLiveViewer = (templateId: string = 'sales-dashboard') => {
+
+  /* =========================================================
+     LIVE DASHBOARD VIEWER
+  ========================================================== */
+
+  const handleOpenLiveViewer = (
+    templateId: string = 'sales-dashboard'
+  ) => {
+
     setLiveViewerTemplateId(templateId);
+
     setIsLiveViewerOpen(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+
   };
 
-  // Filtered Templates
+
+  /* =========================================================
+     FILTER TEMPLATES
+  ========================================================== */
+
   const filteredTemplates = useMemo(() => {
-    return DASHBOARD_TEMPLATES.filter(template => {
-      // Category filter
-      if (activeTab !== 'all' && activeTab !== 'live-viewer' && activeTab !== 'bento-showcase') {
-        if (activeTab === 'bundle' && template.category !== 'bundle') return false;
-        if (activeTab !== 'bundle' && template.category !== activeTab) return false;
+
+    return DASHBOARD_TEMPLATES.filter(
+      template => {
+
+        /*
+         * Category filter
+         */
+        if (
+          activeTab !== 'all' &&
+          activeTab !== 'live-viewer' &&
+          activeTab !== 'bento-showcase'
+        ) {
+
+          if (
+            activeTab === 'bundle' &&
+            template.category !== 'bundle'
+          ) {
+            return false;
+          }
+
+          if (
+            activeTab !== 'bundle' &&
+            template.category !== activeTab
+          ) {
+            return false;
+          }
+
+        }
+
+
+        /*
+         * Search filter
+         */
+        if (searchQuery.trim()) {
+
+          const q =
+            searchQuery.toLowerCase();
+
+          const matchesName =
+            template.name
+              .toLowerCase()
+              .includes(q);
+
+          const matchesDesc =
+            template.description
+              .toLowerCase()
+              .includes(q);
+
+          const matchesCat =
+            template.category
+              .toLowerCase()
+              .includes(q);
+
+          const matchesFeature =
+            template.features.some(
+              feature =>
+                feature
+                  .toLowerCase()
+                  .includes(q)
+            );
+
+          return (
+            matchesName ||
+            matchesDesc ||
+            matchesCat ||
+            matchesFeature
+          );
+
+        }
+
+        return true;
+
       }
+    );
 
-      // Search query
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchesName = template.name.toLowerCase().includes(q);
-        const matchesDesc = template.description.toLowerCase().includes(q);
-        const matchesCat = template.category.toLowerCase().includes(q);
-        const matchesFeature = template.features.some(f => f.toLowerCase().includes(q));
-        return matchesName || matchesDesc || matchesCat || matchesFeature;
-      }
+  }, [
+    activeTab,
+    searchQuery
+  ]);
 
-      return true;
-    });
-  }, [activeTab, searchQuery]);
 
-  const bundleTemplate = DASHBOARD_TEMPLATES.find(t => t.id === 'complete-bundle')!;
+  const bundleTemplate =
+    DASHBOARD_TEMPLATES.find(
+      template =>
+        template.id === 'complete-bundle'
+    )!;
 
-  // If live dashboard viewer mode is open
+
+  /* =========================================================
+     LIVE VIEWER MODE
+  ========================================================== */
+
   if (isLiveViewerOpen) {
+
     return (
       <LiveDashboardViewer
-        initialTemplateId={liveViewerTemplateId}
-        onBackToCatalog={() => setIsLiveViewerOpen(false)}
-        onAddToCart={handleAddToCart}
-        onBuyNow={handleBuyNow}
+        initialTemplateId={
+          liveViewerTemplateId
+        }
+
+        onBackToCatalog={() =>
+          setIsLiveViewerOpen(false)
+        }
+
+        onAddToCart={
+          handleAddToCart
+        }
+
+        onBuyNow={
+          handleBuyNow
+        }
       />
     );
+
   }
 
+
+  /* =========================================================
+     MARKETPLACE UI
+  ========================================================== */
+
   return (
+
     <div className="min-h-screen bg-[#0f172a] text-slate-200 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
-      
-      {/* Navigation Header */}
+
+
+      {/* =====================================================
+          NAVIGATION HEADER
+      ====================================================== */}
+
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -138,204 +328,621 @@ export default function App() {
         setIsCartOpen={setIsCartOpen}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onOpenLiveViewer={handleOpenLiveViewer}
+        onOpenLiveViewer={
+          handleOpenLiveViewer
+        }
       />
 
-      {/* Main Container */}
+
+      {/* =====================================================
+          MAIN CONTAINER
+      ====================================================== */}
+
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 w-full">
-        
-        {/* Bento Showcase Grid Section */}
-        {(!searchQuery && (activeTab === 'all' || activeTab === 'bento-showcase')) && (
+
+
+        {/* ===================================================
+            BENTO SHOWCASE
+        ==================================================== */}
+
+        {(
+          !searchQuery &&
+          (
+            activeTab === 'all' ||
+            activeTab === 'bento-showcase'
+          )
+        ) && (
+
           <section id="bento-grid-section">
+
             <BentoGridShowcase
-              onSelectLivePreview={handleOpenLiveViewer}
-              onAddToCart={handleAddToCart}
-              onBuyNow={handleBuyNow}
-              onViewDax={(t) => setActiveDaxModalTemplate(t)}
-              onViewSchema={(t) => setActiveSchemaModalTemplate(t)}
+              onSelectLivePreview={
+                handleOpenLiveViewer
+              }
+
+              onAddToCart={
+                handleAddToCart
+              }
+
+              onBuyNow={
+                handleBuyNow
+              }
+
+              onViewDax={
+                template =>
+                  setActiveDaxModalTemplate(
+                    template
+                  )
+              }
+
+              onViewSchema={
+                template =>
+                  setActiveSchemaModalTemplate(
+                    template
+                  )
+              }
+
             />
+
           </section>
+
         )}
 
-        {/* Featured Master Bundle Banner (Visible in bundle tab or with search) */}
-        {activeTab === 'bundle' && !searchQuery && (
+
+        {/* ===================================================
+            BUNDLE HERO
+        ==================================================== */}
+
+        {activeTab === 'bundle' &&
+          !searchQuery && (
+
           <BundleHero
-            bundleTemplate={bundleTemplate}
-            onSelectLivePreview={() => handleOpenLiveViewer('sales-dashboard')}
-            onBuyNow={handleBuyNow}
-            onAddToCart={handleAddToCart}
+            bundleTemplate={
+              bundleTemplate
+            }
+
+            onSelectLivePreview={() =>
+              handleOpenLiveViewer(
+                'sales-dashboard'
+              )
+            }
+
+            onBuyNow={
+              handleBuyNow
+            }
+
+            onAddToCart={
+              handleAddToCart
+            }
           />
+
         )}
 
-        {/* Templates Grid Section */}
+
+        {/* ===================================================
+            TEMPLATE CATALOG
+        ==================================================== */}
+
         <section className="space-y-6">
+
+
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+
             <div>
+
               <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+
                 <LayoutGrid className="w-5 h-5 text-blue-400" />
-                {activeTab === 'all' || activeTab === 'bento-showcase' 
-                  ? 'Detailed Catalog & Source Files' 
-                  : `${activeTab.toUpperCase()} Templates`}
+
+                {(
+                  activeTab === 'all' ||
+                  activeTab === 'bento-showcase'
+                )
+                  ? 'Detailed Catalog & Source Files'
+                  : `${activeTab.toUpperCase()} Templates`
+                }
+
               </h2>
+
+
               <p className="text-xs text-slate-400 mt-0.5">
-                Every template includes full .PBIX, Excel star-schema model, DAX code library, and PDF setup guide.
+
+                Every template includes full
+                .PBIX, Excel star-schema model,
+                DAX code library, and PDF setup guide.
+
               </p>
+
             </div>
 
-            {/* Quick Live Preview Launch Pill */}
+
+            {/* LIVE PREVIEW */}
+
             <button
-              onClick={() => handleOpenLiveViewer('sales-dashboard')}
+              onClick={() =>
+                handleOpenLiveViewer(
+                  'sales-dashboard'
+                )
+              }
+
               className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/30 text-xs font-semibold transition-all group"
             >
+
               <Eye className="w-3.5 h-3.5 text-blue-400 group-hover:scale-110 transition-transform" />
-              <span>Launch Interactive Live Canvas</span>
+
+              <span>
+                Launch Interactive Live Canvas
+              </span>
+
               <ArrowRight className="w-3.5 h-3.5" />
+
             </button>
+
           </div>
 
-          {/* Grid */}
+
+          {/* TEMPLATE GRID */}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredTemplates.map((template) => (
-              <TemplateCard
-                key={template.id}
-                template={template}
-                onSelectLivePreview={(t) => handleOpenLiveViewer(t.id)}
-                onAddToCart={handleAddToCart}
-                onBuyNow={handleBuyNow}
-                onViewDax={(t) => setActiveDaxModalTemplate(t)}
-                onViewSchema={(t) => setActiveSchemaModalTemplate(t)}
-              />
-            ))}
+
+            {filteredTemplates.map(
+              template => (
+
+                <TemplateCard
+                  key={template.id}
+                  template={template}
+
+                  onSelectLivePreview={
+                    template =>
+                      handleOpenLiveViewer(
+                        template.id
+                      )
+                  }
+
+                  onAddToCart={
+                    handleAddToCart
+                  }
+
+                  onBuyNow={
+                    handleBuyNow
+                  }
+
+                  onViewDax={
+                    template =>
+                      setActiveDaxModalTemplate(
+                        template
+                      )
+                  }
+
+                  onViewSchema={
+                    template =>
+                      setActiveSchemaModalTemplate(
+                        template
+                      )
+                  }
+                />
+
+              )
+            )}
+
           </div>
+
+
+          {/* NO RESULTS */}
 
           {filteredTemplates.length === 0 && (
+
             <div className="text-center py-12 bg-slate-800/40 border border-slate-700 rounded-3xl space-y-3">
-              <p className="text-slate-200 font-bold text-base">No templates found for "{searchQuery}"</p>
-              <p className="text-xs text-slate-400">Try searching for "Sales", "HR", "Finance", or "E-commerce".</p>
+
+              <p className="text-slate-200 font-bold text-base">
+
+                No templates found for
+                "{searchQuery}"
+
+              </p>
+
+              <p className="text-xs text-slate-400">
+
+                Try searching for
+                "Sales", "HR", "Finance",
+                or "E-commerce".
+
+              </p>
+
               <button
-                onClick={() => { setSearchQuery(''); setActiveTab('all'); }}
+                onClick={() => {
+                  setSearchQuery('');
+                  setActiveTab('all');
+                }}
+
                 className="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-semibold text-blue-400 border border-blue-500/30"
               >
+
                 Reset Filters
+
               </button>
+
             </div>
+
           )}
+
         </section>
 
-        {/* Technical Capabilities Matrix in Bento style */}
+
+        {/* ===================================================
+            TECHNICAL CAPABILITIES
+        ==================================================== */}
+
         <section className="bg-slate-800/40 border border-slate-700 rounded-3xl p-6 sm:p-8 space-y-6">
+
           <div className="max-w-2xl space-y-1">
+
             <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
+
               Architecture & Compliance
+
             </span>
+
             <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+
               Why Teams Choose Our Power BI Templates
+
             </h3>
+
           </div>
+
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-300">
+
+
+            {/* 01 */}
+
             <div className="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-5 space-y-2">
+
               <div className="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center font-bold">
+
                 01
+
               </div>
-              <h4 className="font-bold text-white text-sm">Kimball Star-Schema Models</h4>
+
+              <h4 className="font-bold text-white text-sm">
+
+                Kimball Star-Schema Models
+
+              </h4>
+
               <p className="text-slate-400 leading-relaxed">
-                Clean separation of Fact and Dimension tables ensuring blazing-fast report refreshes and memory efficiency in Power BI Desktop and Service.
+
+                Clean separation of Fact and
+                Dimension tables ensuring
+                fast report refreshes and
+                memory efficiency in Power BI
+                Desktop and Service.
+
               </p>
+
             </div>
 
+
+            {/* 02 */}
+
             <div className="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-5 space-y-2">
+
               <div className="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center font-bold">
+
                 02
+
               </div>
-              <h4 className="font-bold text-white text-sm">Documented DAX Formulas</h4>
+
+              <h4 className="font-bold text-white text-sm">
+
+                Documented DAX Formulas
+
+              </h4>
+
               <p className="text-slate-400 leading-relaxed">
-                Time-intelligence measures, dynamic variance %, YTD/QTD calculations, and semi-additive balances written with best-practice formatting.
+
+                Time-intelligence measures,
+                dynamic variance %, YTD/QTD
+                calculations, and semi-additive
+                balances written with
+                best-practice formatting.
+
               </p>
+
             </div>
 
+
+            {/* 03 */}
+
             <div className="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-5 space-y-2">
+
               <div className="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center font-bold">
+
                 03
+
               </div>
-              <h4 className="font-bold text-white text-sm">1-Click Theme Customization</h4>
+
+              <h4 className="font-bold text-white text-sm">
+
+                1-Click Theme Customization
+
+              </h4>
+
               <p className="text-slate-400 leading-relaxed">
-                Includes custom JSON theme files so you can instantaneously align all colors, card corners, and chart palettes with your company brand guidelines.
+
+                Includes custom JSON theme
+                files so you can align colors,
+                card corners, and chart
+                palettes with your company
+                brand guidelines.
+
               </p>
+
             </div>
+
           </div>
+
         </section>
 
-        {/* FAQ & Testimonials */}
+
+        {/* ===================================================
+            FAQ
+        ==================================================== */}
+
         <FaqSection />
+
 
       </main>
 
-      {/* Footer */}
+
+      {/* =====================================================
+          FOOTER
+      ====================================================== */}
+
       <footer className="bg-slate-900/90 border-t border-slate-800 text-slate-400 text-xs py-8 px-4 sm:px-6 lg:px-8">
+
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+
+
           <div className="flex items-center gap-2">
+
             <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center text-white font-bold text-xs">
+
               BI
+
             </div>
-            <span className="font-bold text-white">Template<span className="text-blue-500">Store</span></span>
-            <span>— powerbi.com/power-bi-templates</span>
+
+            <span className="font-bold text-white">
+
+              Power BI
+              <span className="text-blue-500">
+                Templates
+              </span>
+
+            </span>
+
+            <span>
+              — Power BI Dashboard Templates
+            </span>
+
           </div>
 
-          <div className="flex items-center gap-4 text-slate-400">
-            <span>Sales ($15)</span>
+
+          <div className="flex items-center gap-4 text-slate-400 flex-wrap justify-center">
+
+            <span>
+              Sales ($15)
+            </span>
+
             <span>•</span>
-            <span>HR ($20)</span>
+
+            <span>
+              HR ($20)
+            </span>
+
             <span>•</span>
-            <span>Finance ($25)</span>
+
+            <span>
+              Finance ($25)
+            </span>
+
             <span>•</span>
-            <span>E-commerce ($30)</span>
+
+            <span>
+              E-commerce ($30)
+            </span>
+
             <span>•</span>
-            <span className="text-blue-400 font-bold">Complete Bundle ($60)</span>
+
+            <span className="text-blue-400 font-bold">
+
+              Complete Bundle ($60)
+
+            </span>
+
           </div>
+
 
           <div className="text-slate-500 text-[11px]">
-            Prices in USD ($). Instant digital delivery.
+
+            Prices in USD ($).
+            Instant digital delivery.
+
           </div>
+
         </div>
+
       </footer>
 
-      {/* Modals & Drawers */}
+
+      {/* =====================================================
+          CART DRAWER
+      ====================================================== */}
+
       <CartDrawer
+
         isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
+
+        onClose={() =>
+          setIsCartOpen(false)
+        }
+
         cart={cart}
-        onRemoveItem={handleRemoveFromCart}
-        onClearCart={handleClearCart}
+
+        onRemoveItem={
+          handleRemoveFromCart
+        }
+
+        onClearCart={
+          handleClearCart
+        }
+
         onCheckout={() => {
+
           setIsCartOpen(false);
+
           setIsCheckoutOpen(true);
+
         }}
-        onAddBundle={handleAddBundleToCart}
+
+        onAddBundle={
+          handleAddBundleToCart
+        }
+
       />
+
+
+      {/* =====================================================
+          CHECKOUT
+      ====================================================== */}
 
       <CheckoutModal
+
         isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
+
+        onClose={() =>
+          setIsCheckoutOpen(false)
+        }
+
         cart={cart}
-        onOrderCompleted={handleClearCart}
+
+        onOrderCompleted={
+          handleClearCart
+        }
+
       />
 
+
+      {/* =====================================================
+          DAX MODAL
+      ====================================================== */}
+
       {activeDaxModalTemplate && (
+
         <DaxExplorerModal
-          template={activeDaxModalTemplate}
-          onClose={() => setActiveDaxModalTemplate(null)}
+
+          template={
+            activeDaxModalTemplate
+          }
+
+          onClose={() =>
+            setActiveDaxModalTemplate(null)
+          }
+
         />
+
       )}
 
+
+      {/* =====================================================
+          DATA MODEL MODAL
+      ====================================================== */}
+
       {activeSchemaModalTemplate && (
+
         <DataModelViewer
-          template={activeSchemaModalTemplate}
-          onClose={() => setActiveSchemaModalTemplate(null)}
+
+          template={
+            activeSchemaModalTemplate
+          }
+
+          onClose={() =>
+            setActiveSchemaModalTemplate(null)
+          }
+
         />
+
       )}
 
     </div>
+
   );
 }
 
+
+/* =========================================================
+   MAIN APP WITH ROUTES
+========================================================= */
+
+export default function App() {
+
+  return (
+
+    <BrowserRouter>
+
+      <Routes>
+
+        {/* =================================================
+            HOMEPAGE
+        ================================================== */}
+
+        <Route
+          path="/"
+          element={
+            <MarketplacePage />
+          }
+        />
+
+
+        {/* =================================================
+            BLOG INDEX
+        ================================================== */}
+
+        <Route
+          path="/blog"
+          element={
+            <BlogPage />
+          }
+        />
+
+
+        {/* =================================================
+            BLOG ARTICLES
+        ================================================== */}
+
+        <Route
+          path="/blog/:slug"
+          element={
+            <BlogArticle />
+          }
+        />
+
+
+        {/* =================================================
+            FALLBACK
+        ================================================== */}
+
+        <Route
+          path="*"
+          element={
+            <MarketplacePage />
+          }
+        />
+
+      </Routes>
+
+    </BrowserRouter>
+
+  );
+}
