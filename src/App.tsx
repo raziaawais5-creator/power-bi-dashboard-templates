@@ -1,8 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+
 import {
-  BarChart3,
-  Sparkles,
-  Zap,
   ArrowRight,
   Eye,
   LayoutGrid,
@@ -33,12 +31,23 @@ import { BlogArticle } from './components/BlogArticle';
 
 
 /* =========================================================
+   WEBSITE URL
+========================================================= */
+
+export const SITE_URL =
+  'https://power-bi-dashboard-templates.vercel.app';
+
+
+/* =========================================================
    HOME / MARKETPLACE PAGE
 ========================================================= */
 
 function MarketplacePage() {
 
-  // Navigation & View state
+  /* =========================================================
+     NAVIGATION STATE
+  ========================================================== */
+
   const [activeTab, setActiveTab] =
     useState<string>('all');
 
@@ -52,7 +61,10 @@ function MarketplacePage() {
     useState<string>('sales-dashboard');
 
 
-  // Modals state
+  /* =========================================================
+     MODAL STATE
+  ========================================================== */
+
   const [activeDaxModalTemplate, setActiveDaxModalTemplate] =
     useState<DashboardTemplate | null>(null);
 
@@ -66,17 +78,20 @@ function MarketplacePage() {
     useState<boolean>(false);
 
 
-  // Cart state
+  /* =========================================================
+     CART STATE
+  ========================================================== */
+
   const [cart, setCart] = useState<CartItem[]>([
     {
       template: DASHBOARD_TEMPLATES[0],
-      quantity: 1
-    }
+      quantity: 1,
+    },
   ]);
 
 
   /* =========================================================
-     CART OPERATIONS
+     ADD TO CART
   ========================================================== */
 
   const handleAddToCart = (
@@ -93,30 +108,35 @@ function MarketplacePage() {
       if (existing) {
 
         return prev.map(item =>
+
           item.template.id === template.id
+
             ? {
                 ...item,
                 quantity:
-                  item.quantity + 1
+                  item.quantity + 1,
               }
+
             : item
         );
-
       }
 
       return [
         ...prev,
         {
           template,
-          quantity: 1
-        }
+          quantity: 1,
+        },
       ];
-
     });
 
     setIsCartOpen(true);
   };
 
+
+  /* =========================================================
+     BUY NOW
+  ========================================================== */
 
   const handleBuyNow = (
     template: DashboardTemplate
@@ -125,13 +145,17 @@ function MarketplacePage() {
     setCart([
       {
         template,
-        quantity: 1
-      }
+        quantity: 1,
+      },
     ]);
 
     setIsCheckoutOpen(true);
   };
 
+
+  /* =========================================================
+     REMOVE FROM CART
+  ========================================================== */
 
   const handleRemoveFromCart = (
     templateId: string
@@ -143,14 +167,21 @@ function MarketplacePage() {
           item.template.id !== templateId
       )
     );
-
   };
 
+
+  /* =========================================================
+     CLEAR CART
+  ========================================================== */
 
   const handleClearCart = () => {
     setCart([]);
   };
 
+
+  /* =========================================================
+     ADD BUNDLE
+  ========================================================== */
 
   const handleAddBundleToCart = (
     bundleTemplate: DashboardTemplate
@@ -159,15 +190,14 @@ function MarketplacePage() {
     setCart([
       {
         template: bundleTemplate,
-        quantity: 1
-      }
+        quantity: 1,
+      },
     ]);
-
   };
 
 
   /* =========================================================
-     LIVE DASHBOARD VIEWER
+     OPEN LIVE DASHBOARD
   ========================================================== */
 
   const handleOpenLiveViewer = (
@@ -180,9 +210,8 @@ function MarketplacePage() {
 
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
-
   };
 
 
@@ -195,9 +224,8 @@ function MarketplacePage() {
     return DASHBOARD_TEMPLATES.filter(
       template => {
 
-        /*
-         * Category filter
-         */
+        /* CATEGORY FILTER */
+
         if (
           activeTab !== 'all' &&
           activeTab !== 'live-viewer' &&
@@ -217,13 +245,11 @@ function MarketplacePage() {
           ) {
             return false;
           }
-
         }
 
 
-        /*
-         * Search filter
-         */
+        /* SEARCH FILTER */
+
         if (searchQuery.trim()) {
 
           const q =
@@ -258,19 +284,21 @@ function MarketplacePage() {
             matchesCat ||
             matchesFeature
           );
-
         }
 
         return true;
-
       }
     );
 
   }, [
     activeTab,
-    searchQuery
+    searchQuery,
   ]);
 
+
+  /* =========================================================
+     BUNDLE TEMPLATE
+  ========================================================== */
 
   const bundleTemplate =
     DASHBOARD_TEMPLATES.find(
@@ -286,6 +314,7 @@ function MarketplacePage() {
   if (isLiveViewerOpen) {
 
     return (
+
       <LiveDashboardViewer
         initialTemplateId={
           liveViewerTemplateId
@@ -303,23 +332,31 @@ function MarketplacePage() {
           handleBuyNow
         }
       />
-    );
 
+    );
   }
 
 
   /* =========================================================
-     MARKETPLACE UI
+     MARKETPLACE
   ========================================================== */
 
   return (
 
-    <div className="min-h-screen bg-[#0f172a] text-slate-200 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div
+      className="
+        min-h-screen
+        bg-[#0f172a]
+        text-slate-200
+        flex
+        flex-col
+        font-sans
+        selection:bg-blue-600
+        selection:text-white
+      "
+    >
 
-
-      {/* =====================================================
-          NAVIGATION HEADER
-      ====================================================== */}
+      {/* HEADER */}
 
       <Header
         activeTab={activeTab}
@@ -334,118 +371,158 @@ function MarketplacePage() {
       />
 
 
-      {/* =====================================================
-          MAIN CONTAINER
-      ====================================================== */}
+      {/* MAIN */}
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 w-full">
+      <main
+        className="
+          flex-1
+          max-w-7xl
+          mx-auto
+          px-4
+          sm:px-6
+          lg:px-8
+          py-8
+          space-y-12
+          w-full
+        "
+      >
 
+        {/* BENTO SHOWCASE */}
 
-        {/* ===================================================
-            BENTO SHOWCASE
-        ==================================================== */}
-
-        {(
+        {
           !searchQuery &&
           (
             activeTab === 'all' ||
             activeTab === 'bento-showcase'
+          ) && (
+
+            <section id="bento-grid-section">
+
+              <BentoGridShowcase
+
+                onSelectLivePreview={
+                  handleOpenLiveViewer
+                }
+
+                onAddToCart={
+                  handleAddToCart
+                }
+
+                onBuyNow={
+                  handleBuyNow
+                }
+
+                onViewDax={
+                  template =>
+                    setActiveDaxModalTemplate(
+                      template
+                    )
+                }
+
+                onViewSchema={
+                  template =>
+                    setActiveSchemaModalTemplate(
+                      template
+                    )
+                }
+
+              />
+
+            </section>
           )
-        ) && (
+        }
 
-          <section id="bento-grid-section">
 
-            <BentoGridShowcase
-              onSelectLivePreview={
-                handleOpenLiveViewer
+        {/* BUNDLE */}
+
+        {
+          activeTab === 'bundle' &&
+          !searchQuery && (
+
+            <BundleHero
+
+              bundleTemplate={
+                bundleTemplate
               }
 
-              onAddToCart={
-                handleAddToCart
+              onSelectLivePreview={() =>
+                handleOpenLiveViewer(
+                  'sales-dashboard'
+                )
               }
 
               onBuyNow={
                 handleBuyNow
               }
 
-              onViewDax={
-                template =>
-                  setActiveDaxModalTemplate(
-                    template
-                  )
-              }
-
-              onViewSchema={
-                template =>
-                  setActiveSchemaModalTemplate(
-                    template
-                  )
+              onAddToCart={
+                handleAddToCart
               }
 
             />
-
-          </section>
-
-        )}
+          )
+        }
 
 
-        {/* ===================================================
-            BUNDLE HERO
-        ==================================================== */}
-
-        {activeTab === 'bundle' &&
-          !searchQuery && (
-
-          <BundleHero
-            bundleTemplate={
-              bundleTemplate
-            }
-
-            onSelectLivePreview={() =>
-              handleOpenLiveViewer(
-                'sales-dashboard'
-              )
-            }
-
-            onBuyNow={
-              handleBuyNow
-            }
-
-            onAddToCart={
-              handleAddToCart
-            }
-          />
-
-        )}
-
-
-        {/* ===================================================
-            TEMPLATE CATALOG
-        ==================================================== */}
+        {/* TEMPLATE CATALOG */}
 
         <section className="space-y-6">
 
-
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div
+            className="
+              flex
+              flex-wrap
+              items-center
+              justify-between
+              gap-4
+              border-b
+              border-slate-800
+              pb-4
+            "
+          >
 
             <div>
 
-              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              <h2
+                className="
+                  text-xl
+                  sm:text-2xl
+                  font-bold
+                  text-white
+                  tracking-tight
+                  flex
+                  items-center
+                  gap-2
+                "
+              >
 
-                <LayoutGrid className="w-5 h-5 text-blue-400" />
+                <LayoutGrid
+                  className="
+                    w-5
+                    h-5
+                    text-blue-400
+                  "
+                />
 
-                {(
+                {
                   activeTab === 'all' ||
                   activeTab === 'bento-showcase'
-                )
-                  ? 'Detailed Catalog & Source Files'
-                  : `${activeTab.toUpperCase()} Templates`
+
+                    ? 'Detailed Catalog & Source Files'
+
+                    : `${activeTab.toUpperCase()} Templates`
                 }
 
               </h2>
 
 
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p
+                className="
+                  text-xs
+                  text-slate-400
+                  mt-0.5
+                "
+              >
 
                 Every template includes full
                 .PBIX, Excel star-schema model,
@@ -459,22 +536,52 @@ function MarketplacePage() {
             {/* LIVE PREVIEW */}
 
             <button
+
               onClick={() =>
                 handleOpenLiveViewer(
                   'sales-dashboard'
                 )
               }
 
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/30 text-xs font-semibold transition-all group"
+              className="
+                flex
+                items-center
+                gap-2
+                px-3.5
+                py-1.5
+                rounded-xl
+                bg-slate-800
+                hover:bg-slate-700
+                text-blue-400
+                border
+                border-blue-500/30
+                text-xs
+                font-semibold
+                transition-all
+                group
+              "
             >
 
-              <Eye className="w-3.5 h-3.5 text-blue-400 group-hover:scale-110 transition-transform" />
+              <Eye
+                className="
+                  w-3.5
+                  h-3.5
+                  text-blue-400
+                  group-hover:scale-110
+                  transition-transform
+                "
+              />
 
               <span>
                 Launch Interactive Live Canvas
               </span>
 
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight
+                className="
+                  w-3.5
+                  h-3.5
+                "
+              />
 
             </button>
 
@@ -483,107 +590,191 @@ function MarketplacePage() {
 
           {/* TEMPLATE GRID */}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            className="
+              grid
+              grid-cols-1
+              md:grid-cols-2
+              lg:grid-cols-3
+              gap-6
+            "
+          >
 
-            {filteredTemplates.map(
-              template => (
+            {
+              filteredTemplates.map(
+                template => (
 
-                <TemplateCard
-                  key={template.id}
-                  template={template}
+                  <TemplateCard
 
-                  onSelectLivePreview={
-                    template =>
-                      handleOpenLiveViewer(
-                        template.id
-                      )
-                  }
+                    key={template.id}
 
-                  onAddToCart={
-                    handleAddToCart
-                  }
+                    template={
+                      template
+                    }
 
-                  onBuyNow={
-                    handleBuyNow
-                  }
+                    onSelectLivePreview={
+                      template =>
+                        handleOpenLiveViewer(
+                          template.id
+                        )
+                    }
 
-                  onViewDax={
-                    template =>
-                      setActiveDaxModalTemplate(
-                        template
-                      )
-                  }
+                    onAddToCart={
+                      handleAddToCart
+                    }
 
-                  onViewSchema={
-                    template =>
-                      setActiveSchemaModalTemplate(
-                        template
-                      )
-                  }
-                />
+                    onBuyNow={
+                      handleBuyNow
+                    }
 
+                    onViewDax={
+                      template =>
+                        setActiveDaxModalTemplate(
+                          template
+                        )
+                    }
+
+                    onViewSchema={
+                      template =>
+                        setActiveSchemaModalTemplate(
+                          template
+                        )
+                    }
+
+                  />
+
+                )
               )
-            )}
+            }
 
           </div>
 
 
           {/* NO RESULTS */}
 
-          {filteredTemplates.length === 0 && (
+          {
+            filteredTemplates.length === 0 && (
 
-            <div className="text-center py-12 bg-slate-800/40 border border-slate-700 rounded-3xl space-y-3">
-
-              <p className="text-slate-200 font-bold text-base">
-
-                No templates found for
-                "{searchQuery}"
-
-              </p>
-
-              <p className="text-xs text-slate-400">
-
-                Try searching for
-                "Sales", "HR", "Finance",
-                or "E-commerce".
-
-              </p>
-
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setActiveTab('all');
-                }}
-
-                className="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-semibold text-blue-400 border border-blue-500/30"
+              <div
+                className="
+                  text-center
+                  py-12
+                  bg-slate-800/40
+                  border
+                  border-slate-700
+                  rounded-3xl
+                  space-y-3
+                "
               >
 
-                Reset Filters
+                <p
+                  className="
+                    text-slate-200
+                    font-bold
+                    text-base
+                  "
+                >
 
-              </button>
+                  No templates found for
+                  "{searchQuery}"
 
-            </div>
+                </p>
 
-          )}
+
+                <p
+                  className="
+                    text-xs
+                    text-slate-400
+                  "
+                >
+
+                  Try searching for
+                  "Sales", "HR", "Finance",
+                  or "E-commerce".
+
+                </p>
+
+
+                <button
+
+                  onClick={() => {
+
+                    setSearchQuery('');
+
+                    setActiveTab('all');
+
+                  }}
+
+                  className="
+                    px-4
+                    py-2
+                    rounded-xl
+                    bg-slate-700
+                    hover:bg-slate-600
+                    text-xs
+                    font-semibold
+                    text-blue-400
+                    border
+                    border-blue-500/30
+                  "
+                >
+
+                  Reset Filters
+
+                </button>
+
+              </div>
+            )
+          }
 
         </section>
 
 
-        {/* ===================================================
-            TECHNICAL CAPABILITIES
-        ==================================================== */}
+        {/* TECHNICAL CAPABILITIES */}
 
-        <section className="bg-slate-800/40 border border-slate-700 rounded-3xl p-6 sm:p-8 space-y-6">
+        <section
+          className="
+            bg-slate-800/40
+            border
+            border-slate-700
+            rounded-3xl
+            p-6
+            sm:p-8
+            space-y-6
+          "
+        >
 
-          <div className="max-w-2xl space-y-1">
+          <div
+            className="
+              max-w-2xl
+              space-y-1
+            "
+          >
 
-            <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
+            <span
+              className="
+                text-xs
+                font-bold
+                text-blue-400
+                uppercase
+                tracking-wider
+              "
+            >
 
               Architecture & Compliance
 
             </span>
 
-            <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+
+            <h3
+              className="
+                text-xl
+                sm:text-2xl
+                font-bold
+                text-white
+                tracking-tight
+              "
+            >
 
               Why Teams Choose Our Power BI Templates
 
@@ -592,91 +783,170 @@ function MarketplacePage() {
           </div>
 
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-300">
+          <div
+            className="
+              grid
+              grid-cols-1
+              md:grid-cols-3
+              gap-6
+              text-xs
+              text-slate-300
+            "
+          >
 
+            <div
+              className="
+                bg-slate-900/80
+                border
+                border-slate-700/80
+                rounded-2xl
+                p-5
+                space-y-2
+              "
+            >
 
-            {/* 01 */}
-
-            <div className="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-5 space-y-2">
-
-              <div className="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center font-bold">
-
+              <div
+                className="
+                  w-8
+                  h-8
+                  rounded-lg
+                  bg-blue-500/15
+                  text-blue-400
+                  flex
+                  items-center
+                  justify-center
+                  font-bold
+                "
+              >
                 01
-
               </div>
 
-              <h4 className="font-bold text-white text-sm">
-
+              <h4
+                className="
+                  font-bold
+                  text-white
+                  text-sm
+                "
+              >
                 Kimball Star-Schema Models
-
               </h4>
 
-              <p className="text-slate-400 leading-relaxed">
-
+              <p
+                className="
+                  text-slate-400
+                  leading-relaxed
+                "
+              >
                 Clean separation of Fact and
-                Dimension tables ensuring
-                fast report refreshes and
-                memory efficiency in Power BI
-                Desktop and Service.
-
+                Dimension tables ensuring fast
+                report refreshes and memory
+                efficiency in Power BI Desktop
+                and Service.
               </p>
 
             </div>
 
 
-            {/* 02 */}
+            <div
+              className="
+                bg-slate-900/80
+                border
+                border-slate-700/80
+                rounded-2xl
+                p-5
+                space-y-2
+              "
+            >
 
-            <div className="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-5 space-y-2">
-
-              <div className="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center font-bold">
-
+              <div
+                className="
+                  w-8
+                  h-8
+                  rounded-lg
+                  bg-blue-500/15
+                  text-blue-400
+                  flex
+                  items-center
+                  justify-center
+                  font-bold
+                "
+              >
                 02
-
               </div>
 
-              <h4 className="font-bold text-white text-sm">
-
+              <h4
+                className="
+                  font-bold
+                  text-white
+                  text-sm
+                "
+              >
                 Documented DAX Formulas
-
               </h4>
 
-              <p className="text-slate-400 leading-relaxed">
-
+              <p
+                className="
+                  text-slate-400
+                  leading-relaxed
+                "
+              >
                 Time-intelligence measures,
                 dynamic variance %, YTD/QTD
                 calculations, and semi-additive
                 balances written with
                 best-practice formatting.
-
               </p>
 
             </div>
 
 
-            {/* 03 */}
+            <div
+              className="
+                bg-slate-900/80
+                border
+                border-slate-700/80
+                rounded-2xl
+                p-5
+                space-y-2
+              "
+            >
 
-            <div className="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-5 space-y-2">
-
-              <div className="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center font-bold">
-
+              <div
+                className="
+                  w-8
+                  h-8
+                  rounded-lg
+                  bg-blue-500/15
+                  text-blue-400
+                  flex
+                  items-center
+                  justify-center
+                  font-bold
+                "
+              >
                 03
-
               </div>
 
-              <h4 className="font-bold text-white text-sm">
-
+              <h4
+                className="
+                  font-bold
+                  text-white
+                  text-sm
+                "
+              >
                 1-Click Theme Customization
-
               </h4>
 
-              <p className="text-slate-400 leading-relaxed">
-
-                Includes custom JSON theme
-                files so you can align colors,
-                card corners, and chart
-                palettes with your company
-                brand guidelines.
-
+              <p
+                className="
+                  text-slate-400
+                  leading-relaxed
+                "
+              >
+                Includes custom JSON theme files
+                so you can align colors, card
+                corners, and chart palettes with
+                your company brand guidelines.
               </p>
 
             </div>
@@ -686,34 +956,74 @@ function MarketplacePage() {
         </section>
 
 
-        {/* ===================================================
-            FAQ
-        ==================================================== */}
+        {/* FAQ */}
 
         <FaqSection />
-
 
       </main>
 
 
-      {/* =====================================================
-          FOOTER
-      ====================================================== */}
+      {/* FOOTER */}
 
-      <footer className="bg-slate-900/90 border-t border-slate-800 text-slate-400 text-xs py-8 px-4 sm:px-6 lg:px-8">
+      <footer
+        className="
+          bg-slate-900/90
+          border-t
+          border-slate-800
+          text-slate-400
+          text-xs
+          py-8
+          px-4
+          sm:px-6
+          lg:px-8
+        "
+      >
 
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div
+          className="
+            max-w-7xl
+            mx-auto
+            flex
+            flex-col
+            sm:flex-row
+            items-center
+            justify-between
+            gap-4
+          "
+        >
 
+          <div
+            className="
+              flex
+              items-center
+              gap-2
+            "
+          >
 
-          <div className="flex items-center gap-2">
-
-            <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center text-white font-bold text-xs">
-
+            <div
+              className="
+                w-6
+                h-6
+                bg-blue-600
+                rounded-md
+                flex
+                items-center
+                justify-center
+                text-white
+                font-bold
+                text-xs
+              "
+            >
               BI
-
             </div>
 
-            <span className="font-bold text-white">
+
+            <span
+              className="
+                font-bold
+                text-white
+              "
+            >
 
               Power BI
               <span className="text-blue-500">
@@ -722,6 +1032,7 @@ function MarketplacePage() {
 
             </span>
 
+
             <span>
               — Power BI Dashboard Templates
             </span>
@@ -729,7 +1040,16 @@ function MarketplacePage() {
           </div>
 
 
-          <div className="flex items-center gap-4 text-slate-400 flex-wrap justify-center">
+          <div
+            className="
+              flex
+              items-center
+              gap-4
+              text-slate-400
+              flex-wrap
+              justify-center
+            "
+          >
 
             <span>
               Sales ($15)
@@ -755,16 +1075,24 @@ function MarketplacePage() {
 
             <span>•</span>
 
-            <span className="text-blue-400 font-bold">
-
+            <span
+              className="
+                text-blue-400
+                font-bold
+              "
+            >
               Complete Bundle ($60)
-
             </span>
 
           </div>
 
 
-          <div className="text-slate-500 text-[11px]">
+          <div
+            className="
+              text-slate-500
+              text-[11px]
+            "
+          >
 
             Prices in USD ($).
             Instant digital delivery.
@@ -776,19 +1104,21 @@ function MarketplacePage() {
       </footer>
 
 
-      {/* =====================================================
-          CART DRAWER
-      ====================================================== */}
+      {/* CART DRAWER */}
 
       <CartDrawer
 
-        isOpen={isCartOpen}
+        isOpen={
+          isCartOpen
+        }
 
         onClose={() =>
           setIsCartOpen(false)
         }
 
-        cart={cart}
+        cart={
+          cart
+        }
 
         onRemoveItem={
           handleRemoveFromCart
@@ -813,19 +1143,21 @@ function MarketplacePage() {
       />
 
 
-      {/* =====================================================
-          CHECKOUT
-      ====================================================== */}
+      {/* CHECKOUT */}
 
       <CheckoutModal
 
-        isOpen={isCheckoutOpen}
+        isOpen={
+          isCheckoutOpen
+        }
 
         onClose={() =>
           setIsCheckoutOpen(false)
         }
 
-        cart={cart}
+        cart={
+          cart
+        }
 
         onOrderCompleted={
           handleClearCart
@@ -834,49 +1166,48 @@ function MarketplacePage() {
       />
 
 
-      {/* =====================================================
-          DAX MODAL
-      ====================================================== */}
+      {/* DAX MODAL */}
 
-      {activeDaxModalTemplate && (
+      {
+        activeDaxModalTemplate && (
 
-        <DaxExplorerModal
+          <DaxExplorerModal
 
-          template={
-            activeDaxModalTemplate
-          }
+            template={
+              activeDaxModalTemplate
+            }
 
-          onClose={() =>
-            setActiveDaxModalTemplate(null)
-          }
+            onClose={() =>
+              setActiveDaxModalTemplate(null)
+            }
 
-        />
+          />
 
-      )}
+        )
+      }
 
 
-      {/* =====================================================
-          DATA MODEL MODAL
-      ====================================================== */}
+      {/* DATA MODEL MODAL */}
 
-      {activeSchemaModalTemplate && (
+      {
+        activeSchemaModalTemplate && (
 
-        <DataModelViewer
+          <DataModelViewer
 
-          template={
-            activeSchemaModalTemplate
-          }
+            template={
+              activeSchemaModalTemplate
+            }
 
-          onClose={() =>
-            setActiveSchemaModalTemplate(null)
-          }
+            onClose={() =>
+              setActiveSchemaModalTemplate(null)
+            }
 
-        />
+          />
 
-      )}
+        )
+      }
 
     </div>
-
   );
 }
 
@@ -893,9 +1224,7 @@ export default function App() {
 
       <Routes>
 
-        {/* =================================================
-            HOMEPAGE
-        ================================================== */}
+        {/* HOME */}
 
         <Route
           path="/"
@@ -905,9 +1234,7 @@ export default function App() {
         />
 
 
-        {/* =================================================
-            BLOG INDEX
-        ================================================== */}
+        {/* BLOG INDEX */}
 
         <Route
           path="/blog"
@@ -917,9 +1244,7 @@ export default function App() {
         />
 
 
-        {/* =================================================
-            BLOG ARTICLES
-        ================================================== */}
+        {/* BLOG ARTICLES */}
 
         <Route
           path="/blog/:slug"
@@ -929,9 +1254,7 @@ export default function App() {
         />
 
 
-        {/* =================================================
-            FALLBACK
-        ================================================== */}
+        {/* FALLBACK */}
 
         <Route
           path="*"
@@ -943,6 +1266,5 @@ export default function App() {
       </Routes>
 
     </BrowserRouter>
-
   );
 }
